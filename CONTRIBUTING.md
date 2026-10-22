@@ -43,7 +43,7 @@ Keep the summary in the imperative and under about 70 characters. The body is op
 
 ## Pull requests
 
-Open pull requests against `main`. The CI workflow runs on every pull request: linting and the C++ and Python test suites on Linux and macOS. Wheels are not built for pull requests. The first run from a new contributor needs to be approved by a maintainer before it starts.
+Open pull requests against `main`. The CI workflow runs on every pull request: linting, the C++ and Python test suites on Linux and macOS, and a build of the API reference with warnings treated as errors. A pull request that changes only the documentation and Markdown files skips the lint and test jobs. Wheels are not built for pull requests. The first run from a new contributor needs to be approved by a maintainer before it starts.
 
 Nothing is published from a pull request. When a pull request is merged into `main`, the workflow runs again on the merge; if the commits warrant a release it commits the updated `CHANGELOG.md` and version number, tags the new version and uploads the wheels to PyPI.
 

@@ -162,6 +162,8 @@ cython_debug/
 
 # CMake files
 CMakeFiles
+# FetchContent sources when FETCHCONTENT_BASE_DIR is pointed here, as CI does
+.fetchcontent/
 
 # Scikit-build
 _skbuild

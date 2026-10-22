@@ -22,6 +22,25 @@ env:
 jobs:
   # ---- Stage 1: cheap checks and the version decision, all in parallel -----------------
 
+  # Which parts of the tree changed. Pushes and pull requests that touch only the docs and
+  # Markdown files skip the lint and test jobs; the docs job runs regardless.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            code:
+              - 'src/**'
+              - 'tests/**'
+              - 'CMakeLists.txt'
+              - 'pyproject.toml'
+              - '.github/workflows/ci.yml'
+
   version:
     runs-on: ubuntu-latest
     outputs:
@@ -53,6 +72,8 @@ jobs:
           path: CHANGELOG.md
 
   lint:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -68,6 +89,8 @@ jobs:
 
   # Native C++ test suite (Catch2) through the plain CMake build.
   cpp-tests:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +104,13 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: cpp-tests-${{ matrix.os }}
+      # The third-party sources that CMake fetches (Eigen, Blosc2, Catch2, pybind11), so a
+      # slow or unavailable upstream host does not fail the job. UPDATES_DISCONNECTED keeps
+      # CMake from contacting the remotes when the cached checkout is at the pinned tag.
+      - uses: actions/cache@v4
+        with:
+          path: .fetchcontent
+          key: fetchcontent-${{ matrix.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Install OpenMP runtime (macOS)
         if: runner.os == 'macOS'
         run: brew install libomp
@@ -88,6 +118,8 @@ jobs:
         run: >
           cmake -S . -B build-cpp -DBUILD_PCT_TOOLS_TESTS=ON -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DFETCHCONTENT_BASE_DIR=${{ github.workspace }}/.fetchcontent
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
       - name: Build
         run: cmake --build build-cpp --parallel --target pct_tools_tests
       - name: Test
@@ -96,6 +128,8 @@ jobs:
   # Python test suite against a source install, so it runs on every push and PR and not
   # only when a release is due.
   py-tests:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -104,12 +138,20 @@ jobs:
     env:
       CMAKE_C_COMPILER_LAUNCHER: ccache
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
+      # scikit-build-core passes CMAKE_ARGS to its cmake configure step; see cpp-tests.
+      CMAKE_ARGS: >-
+        -DFETCHCONTENT_BASE_DIR=${{ github.workspace }}/.fetchcontent
+        -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v6
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: py-tests-${{ matrix.os }}
+      - uses: actions/cache@v4
+        with:
+          path: .fetchcontent
+          key: fetchcontent-${{ matrix.os }}-${{ hashFiles('CMakeLists.txt') }}
       - name: Install OpenMP runtime (macOS)
         if: runner.os == 'macOS'
         run: brew install libomp
