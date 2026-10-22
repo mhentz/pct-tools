@@ -4,6 +4,8 @@
 
 This Python package contains tools used in proton CT image reconstructions. They may come in handy when dealing with very large and sparse system matrices.
 
+See the [protonct-sim](https://github.com/mhentz/protonct-sim) repository for a Geant4 application that simulates proton CT acquisitions, generating data that can be reconstructed using the tools provided in this package.
+
 `pct-tools` is a Python wrapper around the C++ extension `_ext` that includes [pybind11](https://pybind11.readthedocs.io/en/stable) bindings and is built using [scikit-build-core](https://github.com/scikit-build/scikit-build-core).
 
 ## Overview
