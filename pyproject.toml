@@ -18,8 +18,10 @@ dependencies = ["numpy>=1.26.0", "scipy>=1.11.2"]
 
 [project.optional-dependencies]
 test = ["pytest"]
+docs = ["sphinx>=8", "furo", "myst-parser>=4"]
 
 [project.urls]
+Documentation = "https://mhentz.github.io/pct-tools/"
 Repository = "https://github.com/mhentz/pct-tools"
 Changelog = "https://github.com/mhentz/pct-tools/blob/main/CHANGELOG.md"
 
@@ -90,6 +92,8 @@ ignore-names = ["compute_ATAx", "test_compute_ATAx*", "ATAx"]
 "tests/python/*" = ["S101", "D103", "PLC0415", "ANN", "INP001", "PLR2004", "SLF001"]
 # INP001: as above; T201: print statement
 "examples/*" = ["INP001", "T201"]
+# INP001: as above
+"docs/conf.py" = ["INP001"]
 
 
 [tool.semantic_release]

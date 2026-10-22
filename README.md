@@ -1,6 +1,7 @@
 # pct-tools — Tools for proton CT image reconstruction
 
 [![PyPI package](https://img.shields.io/pypi/v/pct-tools.svg)](https://pypi.org/project/pct-tools/)
+[![API reference](https://img.shields.io/badge/docs-API%20reference-blue)](https://mhentz.github.io/pct-tools/)
 
 This Python package contains tools used in proton CT image reconstructions. They may come in handy when dealing with very large and sparse system matrices.
 
