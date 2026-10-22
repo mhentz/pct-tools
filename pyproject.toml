@@ -55,7 +55,7 @@ CMAKE_EXPORT_COMPILE_COMMANDS = "ON"
 [tool.cibuildwheel]
 build-frontend = "build"
 # Run the Python test suite against each freshly built wheel on its target platform.
-test-command = "pytest {project}/tests/python"
+test-command = "pytest {project}/tests/python -v"
 test-extras = ["test"]
 # numpy and scipy ship manylinux_2_28 wheels only; the default manylinux2014 image (glibc
 # 2.17) would have to build numpy from source, which its compiler cannot.

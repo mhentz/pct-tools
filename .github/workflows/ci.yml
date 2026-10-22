@@ -118,7 +118,7 @@ jobs:
           uv venv --python ${PYTHON_VERSION}
           uv pip install '.[test]'
       - name: Run Python tests
-        run: .venv/bin/pytest tests/python
+        run: .venv/bin/pytest tests/python -v
 
   # ---- Stage 2: wheels, only for a releasable commit and only once the checks pass ------
 
