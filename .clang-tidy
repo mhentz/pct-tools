@@ -1,0 +1,17 @@
+# Run with the compile database scikit-build-core writes to build/<wheel_tag>/:
+#   clang-tidy -p build/<wheel_tag> src/cpp/src/*.cpp src/cpp/src/matrix/*.cpp
+Checks: >
+  bugprone-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length,
+  -readability-magic-numbers
+WarningsAsErrors: ''
+HeaderFilterRegex: 'src/cpp/include/.*'
+FormatStyle: file

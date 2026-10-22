@@ -1,0 +1,32 @@
+# Install once with `uvx pre-commit install`; run on everything with `uvx pre-commit run -a`.
+# The ruff and clang-format hooks call the same tools as the CI lint job through uvx.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(LICENSE|THIRD_PARTY_LICENSES\.md)$
+      - id: end-of-file-fixer
+        exclude: ^(LICENSE|THIRD_PARTY_LICENSES\.md)$
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uvx ruff check --fix
+        language: system
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff format
+        entry: uvx ruff format
+        language: system
+        types_or: [python, pyi]
+      - id: clang-format
+        name: clang-format
+        entry: uvx clang-format -i
+        language: system
+        types_or: [c++, c]

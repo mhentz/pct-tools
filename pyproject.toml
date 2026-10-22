@@ -1,0 +1,101 @@
+[project]
+name = "pct-tools"
+version = "0.4.1"
+authors = [{ name = "Matthieu Hentz", email = "m.hentz@outlook.com" }]
+description = "Tools for proton CT reconstructions."
+requires-python = ">=3.12"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_LICENSES.md"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+dependencies = ["numpy>=1.26.0", "scipy>=1.11.2"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+Repository = "https://github.com/mhentz/pct-tools"
+Changelog = "https://github.com/mhentz/pct-tools/blob/main/CHANGELOG.md"
+
+
+[build-system]
+# scikit-build-core 0.11 is the first release to read PEP 639 license-files.
+# pybind11 is pinned to the version fetched by CMake and listed in THIRD_PARTY_LICENSES.md.
+requires = ["scikit-build-core>=0.11", "pybind11==2.12.0"]
+build-backend = "scikit_build_core.build"
+
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+build-dir = "build/{wheel_tag}"
+build.verbose = true
+build.tool-args = ["-j4"]
+
+cmake.build-type = "Release"
+
+# Eigen's install rules would otherwise put its full header tree and CMake/pkg-config
+# files into the wheel; only the extension module is needed at runtime.
+wheel.exclude = ["include/**", "share/**"]
+
+
+[tool.scikit-build.cmake.define]
+# Optimisation flags only; the target architecture is left to the compiler default
+# so that the package builds on both x86-64 and arm64.
+CMAKE_CXX_FLAGS_RELEASE = "-O3 -flto"
+# Write compile_commands.json to the build dir for clangd and other C++ tooling.
+CMAKE_EXPORT_COMPILE_COMMANDS = "ON"
+
+
+[tool.cibuildwheel]
+build-frontend = "build"
+# Run the Python test suite against each freshly built wheel on its target platform.
+test-command = "pytest {project}/tests/python"
+test-extras = ["test"]
+
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "CPY001",  # missing copyright notice at the top of a file
+    "PLR0913", # too many arguments in a function definition (default: 5)
+    "PLR0917", # too many positional arguments in a function definition (default: 5)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pep8-naming]
+# Names exempt from the lowercase function (N802) and variable (N806) checks.
+ignore-names = ["compute_ATAx", "test_compute_ATAx*", "ATAx"]
+
+[tool.ruff.lint.per-file-ignores]
+# SLF001: access to a member whose name starts with an underscore (pct_tools._ext)
+"src/pct_tools/*" = ["SLF001"]
+# S101: assert statement; D103: public function without a docstring; PLC0415: import not
+# at the top of the module; ANN: missing type annotations; INP001: directory without an
+# __init__.py; PLR2004: literal (magic) value in a comparison; SLF001: as above
+"tests/python/*" = ["S101", "D103", "PLC0415", "ANN", "INP001", "PLR2004", "SLF001"]
+# INP001: as above; T201: print statement
+"examples/*" = ["INP001", "T201"]
+
+
+[tool.semantic_release]
+version_source = "tag"
+upload_to_pypi = false
+upload_to_repository = false
+
+[tool.semantic_release.changelog]
+mode = "update"
+
+[tool.semantic_release.branches.any_branch]
+match = "*"
+prerelease = false

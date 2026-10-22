@@ -1,0 +1,14 @@
+# Formatting rules for the C++ sources. Run from the repository root:
+#   clang-format -i $(git ls-files 'src/cpp/*.cpp' 'src/cpp/*.h')
+BasedOnStyle: LLVM
+Standard: c++17
+IndentWidth: 4
+AccessModifierOffset: -2
+ColumnLimit: 110
+PointerAlignment: Right
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+IncludeBlocks: Preserve
+SortIncludes: CaseSensitive
