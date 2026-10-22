@@ -128,7 +128,8 @@ jobs:
       - lint
       - cpp-tests
       - py-tests
-    if: needs.version.outputs.released == 'true'
+    # Wheels are only needed for a release, so pull requests stop at the cheap checks.
+    if: github.ref == 'refs/heads/main' && needs.version.outputs.released == 'true'
     strategy:
       fail-fast: false
       matrix:
