@@ -57,6 +57,10 @@ build-frontend = "build"
 # Run the Python test suite against each freshly built wheel on its target platform.
 test-command = "pytest {project}/tests/python"
 test-extras = ["test"]
+# numpy and scipy ship manylinux_2_28 wheels only; the default manylinux2014 image (glibc
+# 2.17) would have to build numpy from source, which its compiler cannot.
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
 
 
 [tool.ruff]
